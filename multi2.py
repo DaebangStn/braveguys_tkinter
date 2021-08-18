@@ -2,7 +2,7 @@ import tkinter as tk
 
 from kafka import KafkaConsumer
 from json import loads
-
+#hi
 class Application(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
