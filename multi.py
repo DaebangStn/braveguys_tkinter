@@ -1,7 +1,5 @@
 import tkinter as tk
-
-from kafka import KafkaConsumer
-from json import loads
+import requests
 
 from controller import Controller
 
@@ -11,6 +9,9 @@ DEV_PATH_ARDUINO_WIN    = 'COM3'
 
 MS_PASS_TO_RESTORE      = 5000
 MS_RESTORE_TO_QR        = 2000
+MS_HTTP_REQUEST_INTERVAL = 300
+
+URL_SERVER              = 'http://localhost:8080'
 class Application(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -69,19 +70,16 @@ class Frame_wait(tk.Frame):
         tk.Button(self, text="Scan bottle", command=
                   lambda: master.switch_frame(Frame_pass)).pack(side="bottom")
 
-#        tk.Button(self, text="scan", command=self.deepstream_hang()).pack()
+        self.after(MS_HTTP_REQUEST_INTERVAL, self.handler_http)
 
-    def deepstream_hang(self):
-        consumer = KafkaConsumer('test', bootstrap_servers=['localhost:9092'])
-
-        for message in consumer:
-            print("%s:%d:%d: key=%s value=%s" % 
-                  (message.topic, message.partition, message.offset, 
-                   message.key, message.value))
-            consumer.close()
-
-        self.master.switch_frame(Frame_pass)
-
+    def handler_http(self):
+        r = requests.get(URL_SERVER)
+        if r.status_code == 200:
+            self.master.switch_frame(Frame_pass)
+            print('http ok')
+        else:
+            print('http failed')
+            self.after(MS_HTTP_REQUEST_INTERVAL, self.handler_http)
 
 class Frame_pass(tk.Frame):
     def __init__(self, master):
@@ -103,7 +101,6 @@ class Frame_pass(tk.Frame):
     def update_clock(self):
         if self.timer > 999:
             self.timer -= 1000
-            print(self.timer)
             self.str_timer.set("%d sec remain" % (self.timer / 1000))
             self.after(1000, self.update_clock)
             
@@ -129,7 +126,6 @@ class Frame_restore(tk.Frame):
     def update_clock(self):
         if self.timer > 999:
             self.timer -= 1000
-            print(self.timer)
             self.str_timer.set("%d sec remain" % (self.timer / 1000))
             self.after(1000, self.update_clock)
 
