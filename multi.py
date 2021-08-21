@@ -54,6 +54,7 @@ class Frame_qr(tk.Frame):
             self.list_qr = []
 
             print(temp_str + ' logged in')
+            self.master.switch_frame(Frame_wait)
         else:
             self.list_qr.append(c)
 
@@ -68,7 +69,7 @@ class Frame_wait(tk.Frame):
         tk.Button(self, text="Next", command=
                   lambda: master.switch_frame(Frame_done)).pack()
         
-        tk.Button(self, text="scan", command=deepstream_hang(master)).pack()
+#        tk.Button(self, text="scan", command=deepstream_hang(master)).pack()
         master.switch_frame(Frame_done)
 
     '''
