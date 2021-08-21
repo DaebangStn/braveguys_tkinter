@@ -48,7 +48,7 @@ class Frame_qr(tk.Frame):
 
     def handler_qr(self, event):
         c = event.char
-        if c is '\r':
+        if c == '\r':
             temp_str = ''.join(self.list_qr)
             self.str_qr.set(temp_str)
             self.list_qr = []
