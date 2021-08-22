@@ -11,7 +11,8 @@ MS_PASS_TO_RESTORE      = 5000
 MS_RESTORE_TO_QR        = 2000
 MS_HTTP_REQUEST_INTERVAL = 300
 
-URL_SERVER              = 'http://localhost:8080'
+URL_SERVER_REQ          = 'http://localhost:8080/req'
+URL_SERVER_CLOSE        = 'http://localhost:8080/req'
 class Application(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -73,10 +74,11 @@ class Frame_wait(tk.Frame):
         self.after(MS_HTTP_REQUEST_INTERVAL, self.handler_http)
 
     def handler_http(self):
-        r = requests.get(URL_SERVER)
+        r = requests.get(URL_SERVER_REQ)
         if r.status_code == 200:
-            self.master.switch_frame(Frame_pass)
+#            r = requests.get(URL_SERVER_CLOSE)
             print('http ok')
+            self.master.switch_frame(Frame_pass)
         else:
             print('http failed')
             self.after(MS_HTTP_REQUEST_INTERVAL, self.handler_http)

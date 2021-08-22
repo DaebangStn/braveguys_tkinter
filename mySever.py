@@ -1,27 +1,41 @@
 from http.server import HTTPServer, BaseHTTPRequestHandler, SimpleHTTPRequestHandler
 from urllib.parse import urlparse
 
+
+mystatus = 'close'
+
 class MyHandler(BaseHTTPRequestHandler):
     
     def do_GET(self):
-        parsed_path=urlparse(self.path)
+        global mystatus
+        print(mystatus)
 
-        message_parts=['Client address : {0:s}'.format(self.client_address),
-                       'Client string : {0:s}'.format(self.address_string()),
-                       'Command : {0:s}'.format(self.command),
-                       'Path : {0:s}'.format(self.path),
-                       'real path : {0:s}'.format(parsed_path.path),
-                       'query : {0:s}'.format(parsed_path.query),
-                       'request version : {0:s}'.format(self.request_version),
-                       'server_version : {0:s}'.format(self.server_version),
-                       'sys_version : {0:s}'.format(self.sys_version),
-                       'protocol_version : {0:s}'.format(self.protocol_version)]
+        if self.path.endswith('/open'):
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            mystatus = 'open'
+            self.end_headers()
+    
+        elif self.path.endswith('/close'):
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            mystatus = 'close'
+            self.end_headers()
+    
+        elif self.path.endswith('/req'):
+            if mystatus == 'open':
+                self.send_response(200)
+                self.send_header('Content-type', 'text/plain')
+            else:
+                self.send_response(404)
+            
+            self.end_headers()
+        else:
+            SimpleHTTPRequestHandler.do_GET(self)
 
-        message='<br>'.join(message_parts)
-        self.send_response(200)
-        self.end_headers()
-        self.wfile.write(message.encode('utf-8'))
         return None
 
-s=HTTPServer(('localhost',8080), SimpleHTTPRequestHandler)
-s.serve_forever()
+
+if __name__ == "__main__":
+    s=HTTPServer(('localhost',8080), MyHandler)
+    s.serve_forever()
