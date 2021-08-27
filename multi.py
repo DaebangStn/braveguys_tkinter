@@ -5,7 +5,7 @@ from controller import Controller
 
 
 DEV_PATH_ARDUINO_LINUX  = '/dev/ttyUSB0'
-DEV_PATH_ARDUINO_WIN    = 'COM3'
+DEV_PATH_ARDUINO_WIN    = 'COM4'
 
 MS_PASS_TO_RESTORE      = 5000
 MS_RESTORE_TO_QR        = 2000
